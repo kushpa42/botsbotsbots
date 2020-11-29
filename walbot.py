@@ -1,3 +1,4 @@
+from retrying import retry
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import ElementClickInterceptedException, StaleElementReferenceException
@@ -6,17 +7,9 @@ from selenium.webdriver.firefox.webdriver import FirefoxProfile
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-import time
-
-# Create driver
-profile = FirefoxProfile("/home/kush/.mozilla/firefox/6v8cxd65.default-release")
-driver = webdriver.Firefox(profile)
-
-wait = WebDriverWait(driver, 4)
-
-try:
-    # driver.get("https://www.walmart.com/ip/PlayStation-5-Console/363472942")
-    driver.get("https://www.walmart.com/ip/Marvel-s-Spider-Man-Miles-Morales-Ultimate-Launch-Edition-Sony-PlayStation-5/795159051")
+@retry(wait_exponential_multiplier=1000, wait_exponential_max=10000, stop_max_attempt_number=5)
+def run(driver, wait):
+    driver.get("https://www.walmart.com/ip/PlayStation-5-Console/363472942")
 
     # Add to cart
     cart_button = wait.until(EC.presence_of_element_located((By.XPATH, '//span[contains(text(), "Add to cart")]')))
@@ -37,8 +30,7 @@ try:
     # Hit Review order
     wait.until(EC.element_to_be_clickable((By.XPATH, '//span[contains(text(), "Review your order")]'))).click()
 
-    driver.quit()
-except Exception as e:
-    print(e)
-finally:
-    driver.quit()
+    # Place order
+    wait.until(EC.element_to_be_clickable((By.XPATH, '//span[contains(text(), "Place order")]'))).click()
+
+    print("Order placed!")

@@ -5,6 +5,7 @@ name = "pypi"
 
 [packages]
 selenium = "*"
+retrying = "*"
 
 [dev-packages]
 
