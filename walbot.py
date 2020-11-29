@@ -7,8 +7,16 @@ from selenium.webdriver.firefox.webdriver import FirefoxProfile
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-@retry(wait_exponential_multiplier=1000, wait_exponential_max=10000, stop_max_attempt_number=5)
+@retry(stop_max_attempt_number=5)
 def run(driver, wait):
+    # Clear cart
+    driver.get("https://www.walmart.com/cart")
+    cart_remove_buttons = driver.find_elements_by_xpath("//button[@data-tl-id='CartRemoveLnk']")
+    
+    for remove_button in cart_remove_buttons:
+        wait.until(EC.invisibility_of_element_located((By.XPATH, "//div[@class='Cart-SpinnerOverlay fixed']")))
+        remove_button.click()
+
     driver.get("https://www.walmart.com/ip/PlayStation-5-Console/363472942")
 
     # Add to cart
