@@ -1,7 +1,7 @@
 from retrying import retry
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.common.exceptions import ElementClickInterceptedException, StaleElementReferenceException
+from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.firefox.webdriver import FirefoxProfile
 from selenium.webdriver.support.ui import WebDriverWait
@@ -26,6 +26,14 @@ def run(driver, wait):
     # Click check out
     checkout_button = wait.until(EC.presence_of_element_located((By.XPATH, '//span[contains(text(), "Check out")]')))
     checkout_button.click()
+
+    # Check if Place order option available
+    try:
+        wait.until(EC.element_to_be_clickable((By.XPATH, '//span[contains(text(), "Place order")]'))).click()
+        print("Order placed!")
+        return
+    except NoSuchElementException as e:
+        pass
 
     # Continue through delivery details
     wait.until(EC.element_to_be_clickable((By.XPATH, '//span[contains(text(), "Continue")]'))).click()

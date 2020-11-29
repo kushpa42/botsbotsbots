@@ -10,8 +10,10 @@ import time
 import walbot as wb
 
 # Create driver
+options = webdriver.FirefoxOptions()
+options.add_argument("--headless")
 profile = FirefoxProfile("/home/kush/.mozilla/firefox/6v8cxd65.default-release")
-driver = webdriver.Firefox(profile)
+driver = webdriver.Firefox(firefox_profile=profile, options=options)
 
 wait = WebDriverWait(driver, 4)
 
